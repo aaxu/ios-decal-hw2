@@ -54,12 +54,7 @@ class ViewController: UIViewController {
     //       Modify this one or create your own.
     func updateResultLabel(_ content: String) {
         print("setting resultLabel")
-        var newLabel = content
-        if (content.hasSuffix(".0")) {
-            newLabel = String(newLabel.characters.dropLast())
-            newLabel = String(newLabel.characters.dropLast())
-        }
-        resultLabel.text = newLabel
+        resultLabel.text = content
     }
     
     
@@ -73,7 +68,11 @@ class ViewController: UIViewController {
         let num2 = Double(array[2])!
         let function = array[1]
         let result = calculation(a: num1, b: num2, operation: function)
-        let stringResult = String(result)
+        var stringResult = String(result)
+        if (stringResult.hasSuffix(".0")) {
+            stringResult = String(stringResult.characters.dropLast())
+            stringResult = String(stringResult.characters.dropLast())
+        }
         index = 0
         return stringResult
     }
