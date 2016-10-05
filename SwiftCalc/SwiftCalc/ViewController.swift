@@ -21,7 +21,8 @@ class ViewController: UIViewController {
     
     // TODO: This looks like a good place to add some data structures.
     //       One data structure is initialized below for reference.
-    var someDataStructure: [String] = [""]
+    var array: [String] = ["", "", ""]
+    var index: Int = 0
     
 
     override func viewDidLoad() {
@@ -52,21 +53,47 @@ class ViewController: UIViewController {
     // TODO: Ensure that resultLabel gets updated.
     //       Modify this one or create your own.
     func updateResultLabel(_ content: String) {
-        print("Update me like one of those PCs")
+        print("setting resultLabel")
+        var newLabel = content
+        if (content.hasSuffix(".0")) {
+            newLabel = String(newLabel.characters.dropLast())
+            newLabel = String(newLabel.characters.dropLast())
+        }
+        resultLabel.text = newLabel
     }
     
     
     // TODO: A calculate method with no parameters, scary!
     //       Modify this one or create your own.
     func calculate() -> String {
-        return "0"
+        print(array[0])
+        print(array[1])
+        print(array[2])
+        let num1 = Double(array[0])!
+        let num2 = Double(array[2])!
+        let function = array[1]
+        let result = calculation(a: num1, b: num2, operation: function)
+        let stringResult = String(result)
+        index = 0
+        return stringResult
     }
     
     // TODO: A simple calculate method for integers.
     //       Modify this one or create your own.
-    func intCalculate(a: Int, b:Int, operation: String) -> Int {
-        print("Calculation requested for \(a) \(operation) \(b)")
-        return 0
+    func calculation(a: Double, b:Double, operation: String) -> Double {
+        switch operation {
+        case "/":
+            return a / b
+        case "*":
+            return a * b
+        case "+":
+            return a + b
+        case "-":
+            return a - b
+        default:
+            print("nooo")
+            return 0.0
+        }
     }
     
     // TODO: A general calculate method for doubles
@@ -78,19 +105,101 @@ class ViewController: UIViewController {
     
     // REQUIRED: The responder to a number button being pressed.
     func numberPressed(_ sender: CustomButton) {
-        guard Int(sender.content) != nil else { return }
-        print("The number \(sender.content) was pressed")
-        // Fill me in!
+        print("appending num")
+        if (array[index].characters.count < 7) {
+            if array[index] == "0" {
+                array[index] = sender.content
+            } else {
+                print(array[index])
+                print("APPENDING HERE")
+                array[index].append(sender.content)
+            }
+            print(sender.content)
+            print(array[index])
+            updateResultLabel(array[index])
+        }
+        
     }
     
     // REQUIRED: The responder to an operator button being pressed.
     func operatorPressed(_ sender: CustomButton) {
-        // Fill me in!
+        let others = ["C", "+/-", "%", "."]
+        if others.contains(sender.content) {
+            otherPressed(sender)
+            return
+        }
+        
+        print("Entering operatorPressed function")
+        if array[2] != "" {
+            if index >= 2 {
+                print("index >= 2")
+                print("call calculate")
+                array[0] = calculate()
+                array[2] = ""
+                updateResultLabel(array[index])
+            
+            }
+        }
+        
+        if sender.content == "=" {
+            index = 0
+            return
+        }
+        
+        array[1] = sender.content
+        index = 2
+    }
+    
+    func otherPressed(_ sender: CustomButton) {
+        var caseIndex = 0
+        if array[index] != "" {
+            caseIndex = index
+        }
+        switch sender.content {
+            case "C":
+                if index == 2 {
+                    if array[index] != "" {
+                        array[index] = ""
+                        updateResultLabel("0")
+                    }
+                    index = 0
+                    return
+                } else {
+                    array[index] = "0"
+                }
+            case "+/-":
+                var num = array[caseIndex]
+                if num.hasPrefix("-"){
+                    num = String(num.characters.dropFirst())
+                } else {
+                    num = "-" + num
+                }
+                array[caseIndex] = num
+            case "%":
+                array[caseIndex] = String(Double(array[index])! / 100.0)
+            case ".":
+                if !(array[index].contains(".")) {
+                    array[index].append(".")
+                }
+                if array[index].hasPrefix(".") {
+                    array[index] = "0" + array[index]
+                }
+            default:
+                print("This case should not happen")
+            
+        }
+        
+        updateResultLabel(array[caseIndex])
+        
     }
     
     // REQUIRED: The responder to a number or operator button being pressed.
     func buttonPressed(_ sender: CustomButton) {
-       // Fill me in!
+        if sender.content == "0" {
+            numberPressed(sender)
+        } else if sender.content == "." {
+            otherPressed(sender)
+        }
     }
     
     // IMPORTANT: Do NOT change any of the code below.
